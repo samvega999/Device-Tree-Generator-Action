@@ -109,6 +109,6 @@ jobs:
           git add *
           git commit -m "${{ github.event.inputs.COMMIT_MESSAGE }}"
           git branch -M ${{ github.event.inputs.DEVICE_BRANCH }}
-          git remote add origin git@github.com:${{ github.actor }}/${{ github.event.inputs.EMPTY_REPO }}
-          git remote set-url origin https://${{ github.actor }}:${{ github.event.inputs.GITHUB_TOKEN }}@github.com/${{ github.actor }}/${{ github.event.inputs.EMPTY_REPO }}
+          git remote add origin git@github.com:kinguser981/${{ github.event.inputs.EMPTY_REPO }}
+          git remote set-url origin https://kinguser981:${{ github.event.inputs.GITHUB_TOKEN }}@github.com/kinguser981/${{ github.event.inputs.EMPTY_REPO }}
           git push -u origin ${{ github.event.inputs.DEVICE_BRANCH }}
