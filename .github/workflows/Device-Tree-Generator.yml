@@ -31,9 +31,10 @@ jobs:
     
     - name: Downloading file
       run: |
-        pytube github.event.inputs.DEVICE_IMG
+        pytube ${{ github.event.inputs.DEVICE_IMG }}
         ls
         ls -la
+        pwd
         
     - name: Set Build Date 
       run: |
