@@ -6,7 +6,7 @@ on:
       DEVICE_IMG:
         description: '(.img) file link'
         required: true
-        default: 'https://dumps.tadiphone.dev/dumps/samsung/a05s/-/raw/a05snsdxx-user-14-UP1A.231005.007-A057FXXS5CXH9-release-keys/recovery.img'
+        default: 'https://youtu.be/pOpVtzysJf4?si=dNNTCnJHqDezTK7J'
       GITHUB_TOKEN:
         description: 'your github Access token (Optional)'
         required: true
@@ -32,6 +32,8 @@ jobs:
     - name: Downloading file
       run: |
         pytube github.event.inputs.DEVICE_IMG
+        ls
+        ls -la
         
     - name: Set Build Date 
       run: |
