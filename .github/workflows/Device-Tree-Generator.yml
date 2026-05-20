@@ -7,32 +7,10 @@ on:
         description: '(.img) file link'
         required: true
         default: 'https://dumps.tadiphone.dev/dumps/samsung/a05s/-/raw/a05snsdxx-user-14-UP1A.231005.007-A057FXXS5CXH9-release-keys/recovery.img'
-      DEVICE_BRANCH:
-        description: 'your device branch name (Optional)'
-        required: true
-        default: 'android-12.1'
       GITHUB_TOKEN:
         description: 'your github Access token (Optional)'
         required: true
         default: 'XXXXXXXXXXXXXXXXXXXXXXXXXX'
-      EMPTY_REPO:
-        description: 'your empty repo name on github (Optional)'
-        required: true
-        default: 'android_device_samsung_a05s.git'
-      COMMIT_MESSAGE:
-        description: 'your commit message (Optional)'
-        required: true
-        default: 'TWRP device tree'
-      PUSH_GITHUB:
-        description: 'Push to GitHub Repository.'
-        type: boolean
-        required: true
-        default: false
-      RELEASE_FILE:
-        description: 'Upload file to GitHub Release too.'
-        type: boolean
-        required: true
-        default: true
 
 jobs:
   build:
@@ -49,66 +27,20 @@ jobs:
 
     - name: Getting tools ready 
       run: |
-        pip3 install twrpdtgen 
-        sudo apt-get install cpio
+        python -m pip install git+https://github.com/pytube/pytube
     
-    - name: Downloading .img file
+    - name: Downloading file
       run: |
-        wget ${{ github.event.inputs.DEVICE_IMG }}
-        if [ -f ./recovery.img ]; then
-            echo "RECOVERY_TYPE=recovery" >> $GITHUB_ENV
-            echo "recovery.img file found!"
-        elif [ -f ./boot.img ]; then
-            echo "RECOVERY_TYPE=boot" >> $GITHUB_ENV
-            echo "boot.img file found!"
-        elif [ -f ./vendor_boot.img ]; then
-            echo "RECOVERY_TYPE=vendor_boot" >> $GITHUB_ENV
-            echo "vendor_boot.img file found!"
-        else
-            echo "No Recovery file found!"
-            cd Exit
-        fi
-        
-    - name: Generating Device tree
-      run: |
-        python3 -m twrpdtgen ./${{ env.RECOVERY_TYPE }}.img 
+        pytube github.event.inputs.DEVICE_IMG
         
     - name: Set Build Date 
       run: |
         echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
-    - name: getting device information 
-      run: |
-          mv ./output/ device
-          cd device/*/
-          echo "DEVICE_ID=${PWD##*/}" >> $GITHUB_ENV
-          cd *
-          echo "DEVICE_IDD=${PWD##*/}" >> $GITHUB_ENV
-
-    - name: Add to Zip
-      run: |
-          zip -r ${{ env.DEVICE_ID }}_${{ env.DEVICE_IDD }}_tree.zip ./device/
-          
     - name: Release
-      if: github.event.inputs.RELEASE_FILE == 'true'
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ${{ env.DEVICE_ID }}_${{ env.DEVICE_IDD }}_tree.zip
-        name: ${{ env.DEVICE_ID }} ${{ env.DEVICE_IDD }} device tree // ${{ env.BUILD_DATE }}
+        name: env.BUILD_DATE
         tag_name: ${{ github.run_id }}
         body: |
-
-    - name: Push to GitHub
-      if: github.event.inputs.PUSH_GITHUB == 'true'
-      run: |
-          git config --global user.email "Samuel Kendall"
-          git config --global user.name "kinguser981@gmail.com"
-          cd ./device/*/*/
-          git init
-          git add *
-          git commit -m "${{ github.event.inputs.COMMIT_MESSAGE }}"
-          git branch -M ${{ github.event.inputs.DEVICE_BRANCH }}
-          git remote add origin git@github.com:kinguser981/${{ github.event.inputs.EMPTY_REPO }}
-          git remote set-url origin https://kinguser981:${{ github.event.inputs.GITHUB_TOKEN }}@github.com/kinguser981/${{ github.event.inputs.EMPTY_REPO }}
-          git push -u origin ${{ github.event.inputs.DEVICE_BRANCH }}
