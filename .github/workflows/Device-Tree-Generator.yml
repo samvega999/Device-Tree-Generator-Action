@@ -27,11 +27,11 @@ jobs:
 
     - name: Getting tools ready 
       run: |
-            pip install yt-dlp
+            sudo apt-get install yt-dlp
     
     - name: Downloading file
       run: |
-            python py.py
+            yt-dlp https://www.youtube.com/watch?v=pOpVtzysJf4
             ls
             ls -la
             pwd
