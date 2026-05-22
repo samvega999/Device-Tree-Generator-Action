@@ -27,7 +27,7 @@ jobs:
 
     - name: Getting tools ready 
       run: |
-            sudo apt-get install yt-dlp
+            sudo apt-get install yt-dlp -y
     
     - name: Downloading file
       run: |
